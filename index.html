@@ -414,6 +414,17 @@ async function loadStations() {
 search.addEventListener("input", displayStations);
 fuel.addEventListener("change", displayStations);
 
+  const refreshButton = document.getElementById("refreshButton");
+
+refreshButton.addEventListener("click", async () => {
+  refreshButton.disabled = true;
+  refreshButton.textContent = "Refreshing...";
+
+  await loadStations();
+
+  refreshButton.disabled = false;
+  refreshButton.textContent = "↻ Refresh Prices";
+});
 loadStations();
 
 </script>
