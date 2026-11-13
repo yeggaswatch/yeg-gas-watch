@@ -269,8 +269,9 @@ function updateSummary() {
   averageNote.textContent = "Across " + stations.length + " tracked stations";
 
   cheapestElement.textContent = cheapest.price.toFixed(1) + "¢";
-  cheapestNote.textContent = cheapest.name;
-
+  cheapestNote.textContent = cheapest.membershipRequired
+  ? cheapest.name + " · Membership required"
+  : cheapest.name;
   countElement.textContent = stations.length;
   countNote.textContent = "Regular gasoline · Credit prices";
 }
