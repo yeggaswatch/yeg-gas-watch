@@ -193,6 +193,29 @@ footer {
 </div>
 
   <div class="section">
+  <h2>Is the detour worth it?</h2>
+  <p>Find out whether driving to a cheaper gas station will actually save you money.</p>
+
+  <div class="controls">
+    <input id="fuelLitres" type="number" min="1" placeholder="Litres to purchase (e.g. 50)" value="50">
+
+    <input id="currentPrice" type="number" min="1" step="0.1" placeholder="Nearby gas price (¢/L)">
+
+    <input id="cheaperPrice" type="number" min="1" step="0.1" placeholder="Cheaper station price (¢/L)">
+
+    <input id="extraDistance" type="number" min="0" step="0.1" placeholder="Extra round-trip distance (km)" value="10">
+
+    <input id="fuelConsumption" type="number" min="0.1" step="0.1" placeholder="Vehicle consumption (L/100 km)" value="9">
+  </div>
+
+  <button id="calculateSavings" type="button">Calculate My Savings</button>
+
+  <div id="savingsResult">
+    <p>Enter your fuel and vehicle details to calculate your potential savings.</p>
+  </div>
+</div>
+
+  <div class="section">
     <h2>Find gas prices</h2>
     <p>Search and filter demonstration stations.</p>
 
