@@ -383,6 +383,10 @@ async function loadStations() {
           address: fullAddress || "Edmonton, Alberta",
           price: Number(regularCreditPrice.centsPerLitre),
           reportedAt: formatTimeAgo(postedDate),
+          isStale: Boolean(
+  postedDate &&
+  Date.now() - postedDate.getTime() > 24 * 60 * 60 * 1000
+),
           reportedBy: regularCreditPrice.reportedBy || "Not specified",
           membershipRequired: (station.amenities || [])
             .includes("membership_required")
