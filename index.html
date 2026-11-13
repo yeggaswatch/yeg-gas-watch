@@ -286,6 +286,28 @@ function escapeHtml(value) {
   })[char]);
 }
 
+function formatTimeAgo(date) {
+  if (!date || isNaN(date.getTime())) {
+    return "Date unavailable";
+  }
+
+  const minutes = Math.floor((Date.now() - date.getTime()) / 60000);
+
+  if (minutes < 0) return "Time unavailable";
+  if (minutes < 1) return "Updated just now";
+  if (minutes < 60) return `Updated ${minutes} min ago`;
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) return `Updated ${hours} hr ago`;
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 7) return `Updated ${days} day${days === 1 ? "" : "s"} ago`;
+
+  return "Reported " + date.toLocaleDateString("en-CA");
+}
+
 function displayStations() {
   const query = search.value.toLowerCase().trim();
   const selectedFuel = fuel.value;
@@ -360,9 +382,7 @@ async function loadStations() {
           name: station.name || "Unnamed station",
           address: fullAddress || "Edmonton, Alberta",
           price: Number(regularCreditPrice.centsPerLitre),
-          reportedAt: postedDate && !isNaN(postedDate)
-            ? postedDate.toLocaleString("en-CA")
-            : "Date unavailable",
+          reportedAt: formatTimeAgo(postedDate),
           reportedBy: regularCreditPrice.reportedBy || "Not specified",
           membershipRequired: (station.amenities || [])
             .includes("membership_required")
