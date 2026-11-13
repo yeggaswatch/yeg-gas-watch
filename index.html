@@ -239,6 +239,41 @@ const fuel = document.getElementById("fuel");
 const container = document.getElementById("stations");
 
 let stations = [];
+  
+function updateSummary() {
+  const averageElement = document.getElementById("averagePrice");
+  const averageNote = document.getElementById("averageNote");
+  const cheapestElement = document.getElementById("cheapestPrice");
+  const cheapestNote = document.getElementById("cheapestNote");
+  const countElement = document.getElementById("stationsCount");
+  const countNote = document.getElementById("stationsNote");
+
+  if (stations.length === 0) {
+    averageElement.textContent = "--.-¢";
+    averageNote.textContent = "No prices available";
+    cheapestElement.textContent = "--.-¢";
+    cheapestNote.textContent = "No prices available";
+    countElement.textContent = "0";
+    countNote.textContent = "No stations found";
+    return;
+  }
+
+  const total = stations.reduce((sum, station) => sum + station.price, 0);
+  const average = total / stations.length;
+
+  const cheapest = stations.reduce((lowest, station) =>
+    station.price < lowest.price ? station : lowest
+  );
+
+  averageElement.textContent = average.toFixed(1) + "¢";
+  averageNote.textContent = "Across " + stations.length + " tracked stations";
+
+  cheapestElement.textContent = cheapest.price.toFixed(1) + "¢";
+  cheapestNote.textContent = cheapest.name;
+
+  countElement.textContent = stations.length;
+  countNote.textContent = "Regular gasoline · Credit prices";
+}
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -332,8 +367,9 @@ async function loadStations() {
             .includes("membership_required")
         };
       })
-      .filter(Boolean);
+   .filter(Boolean);
 
+    updateSummary();
     displayStations();
 
   } catch (error) {
