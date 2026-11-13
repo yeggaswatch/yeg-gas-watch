@@ -231,50 +231,123 @@ footer {
 </footer>
 
 <script>
-const demoStations = [
-  { name: "Demo Station A", area: "North Edmonton", fuel: "Regular", price: 129.9 },
-  { name: "Demo Station B", area: "South Edmonton", fuel: "Regular", price: 132.9 },
-  { name: "Demo Station C", area: "West Edmonton", fuel: "Regular", price: 134.9 },
-  { name: "Demo Station D", area: "Downtown", fuel: "Premium", price: 149.9 },
-  { name: "Demo Station E", area: "East Edmonton", fuel: "Diesel", price: 144.9 }
-];
+
+const API_URL = "https://yeg-gas-watch-api.li876518.workers.dev/api/stations";
 
 const search = document.getElementById("search");
 const fuel = document.getElementById("fuel");
 const container = document.getElementById("stations");
 
+let stations = [];
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
 function displayStations() {
-  const query = search.value.toLowerCase();
+  const query = search.value.toLowerCase().trim();
   const selectedFuel = fuel.value;
 
-  const filtered = demoStations
+  const filtered = stations
     .filter(s =>
-      (s.name + " " + s.area).toLowerCase().includes(query)
-      && (selectedFuel === "All" || s.fuel === selectedFuel)
+      (s.name + " " + s.address).toLowerCase().includes(query) &&
+      (selectedFuel === "All" ||
+       selectedFuel === "All fuel types" ||
+       selectedFuel === "Regular")
     )
     .sort((a, b) => a.price - b.price);
 
   if (filtered.length === 0) {
-    container.innerHTML = "<p>No matching demo stations found.</p>";
+    container.innerHTML = "<p>No matching stations found.</p>";
     return;
   }
 
   container.innerHTML = filtered.map(s => `
     <div class="station">
       <div>
-        <h3>${s.name}</h3>
-        <p>${s.area} · ${s.fuel}</p>
-        <span class="tag">DEMO DATA</span>
+        <h3>${escapeHtml(s.name)}</h3>
+        <p>${escapeHtml(s.address)} · Regular · Credit</p>
+        <span class="tag">
+          Reported: ${escapeHtml(s.reportedAt)}
+        </span>
+        ${s.membershipRequired
+          ? '<span class="tag">Membership required</span>'
+          : ""}
+        <p>Price source: ${escapeHtml(s.reportedBy)}</p>
       </div>
       <div class="station-price">${s.price.toFixed(1)}¢/L</div>
     </div>
   `).join("");
 }
 
+async function loadStations() {
+  container.innerHTML = "<p>Loading Edmonton gas prices...</p>";
+
+  try {
+    const response = await fetch(API_URL);
+
+    if (!response.ok) {
+      throw new Error("API request failed: " + response.status);
+    }
+
+    const data = await response.json();
+
+    stations = (data.stations || [])
+      .map(station => {
+        const regularCreditPrice = (station.prices || []).find(price =>
+          String(price.fuel).toLowerCase() === "regular" &&
+          String(price.payment).toLowerCase() === "credit" &&
+          Number.isFinite(Number(price.centsPerLitre))
+        );
+
+        if (!regularCreditPrice) return null;
+
+        const address = station.address || {};
+        const fullAddress = [
+          address.street,
+          address.city,
+          address.state,
+          address.postalCode
+        ].filter(Boolean).join(", ");
+
+        const postedDate = regularCreditPrice.postedAt
+          ? new Date(regularCreditPrice.postedAt)
+          : null;
+
+        return {
+          name: station.name || "Unnamed station",
+          address: fullAddress || "Edmonton, Alberta",
+          price: Number(regularCreditPrice.centsPerLitre),
+          reportedAt: postedDate && !isNaN(postedDate)
+            ? postedDate.toLocaleString("en-CA")
+            : "Date unavailable",
+          reportedBy: regularCreditPrice.reportedBy || "Not specified",
+          membershipRequired: (station.amenities || [])
+            .includes("membership_required")
+        };
+      })
+      .filter(Boolean);
+
+    displayStations();
+
+  } catch (error) {
+    console.error("Unable to load gas prices:", error);
+    container.innerHTML =
+      "<p>Unable to load gas prices right now. Please try again later.</p>";
+  }
+}
+
 search.addEventListener("input", displayStations);
 fuel.addEventListener("change", displayStations);
 
-displayStations();
+loadStations();
+
 </script>
 
 </body>
