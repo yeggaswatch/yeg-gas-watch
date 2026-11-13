@@ -332,8 +332,12 @@ function displayStations() {
         <h3>${escapeHtml(s.name)}</h3>
         <p>${escapeHtml(s.address)} · Regular · Credit</p>
         <span class="tag">
-          Reported: ${escapeHtml(s.reportedAt)}
-        </span>
+  ${escapeHtml(s.reportedAt)}
+</span>
+${s.isStale
+  ? '<span class="tag">⚠️ Older than 24 hours</span>'
+  : ""}
+
         ${s.membershipRequired
           ? '<span class="tag">Membership required</span>'
           : ""}
