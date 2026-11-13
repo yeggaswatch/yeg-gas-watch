@@ -359,6 +359,8 @@ async function loadStations() {
     }
 
     const data = await response.json();
+    document.getElementById("dataUpdated").textContent =
+  "Last updated: " + new Date().toLocaleString("en-CA");
 
     stations = (data.stations || [])
       .map(station => {
