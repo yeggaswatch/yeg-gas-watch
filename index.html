@@ -448,7 +448,57 @@ refreshButton.addEventListener("click", async () => {
   refreshButton.disabled = false;
   refreshButton.textContent = "↻ Refresh Prices";
 });
-loadStations();
+
+document.getElementById("calculateSavings").addEventListener("click", () => {
+  const litres = Number(document.getElementById("fuelLitres").value);
+  const currentPrice = Number(document.getElementById("currentPrice").value);
+  const cheaperPrice = Number(document.getElementById("cheaperPrice").value);
+  const distance = Number(document.getElementById("extraDistance").value);
+  const consumption = Number(document.getElementById("fuelConsumption").value);
+
+  const result = document.getElementById("savingsResult");
+
+  if (
+    litres <= 0 ||
+    currentPrice <= 0 ||
+    cheaperPrice <= 0 ||
+    distance < 0 ||
+    consumption <= 0 ||
+    ![litres, currentPrice, cheaperPrice, distance, consumption].every(Number.isFinite)
+  ) {
+    result.textContent = "Please enter valid numbers in all fields.";
+    return;
+  }
+
+  if (cheaperPrice >= currentPrice) {
+    result.textContent = "The alternative station is not cheaper. There are no fuel savings from switching.";
+    return;
+  }
+
+  const grossSavings = litres * (currentPrice - cheaperPrice) / 100;
+
+  const detourFuel = distance * consumption / 100;
+
+  const detourCost = detourFuel * currentPrice / 100;
+
+  const netSavings = grossSavings - detourCost;
+
+  if (netSavings > 0) {
+    result.textContent =
+      "Estimated net savings: $" + netSavings.toFixed(2) +
+      " | Gross savings: $" + grossSavings.toFixed(2) +
+      " | Detour fuel cost: $" + detourCost.toFixed(2) +
+      ". The detour is worthwhile based on fuel cost.";
+  } else {
+    result.textContent =
+      "Estimated net savings: $" + netSavings.toFixed(2) +
+      " | Gross savings: $" + grossSavings.toFixed(2) +
+      " | Detour fuel cost: $" + detourCost.toFixed(2) +
+      ". The detour is not worthwhile based on fuel cost.";
+  }
+});
+
+  loadStations();
 
 </script>
 
