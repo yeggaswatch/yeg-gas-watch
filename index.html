@@ -370,7 +370,12 @@ const cheapestPrice = Math.min(...filtered.map(s => s.price));
   container.innerHTML = filtered.map(s => `
     <div class="station">
       <div>
-        <h3>${escapeHtml(s.name)}</h3>
+        <h3>
+  ${escapeHtml(s.name)}
+  ${s.price === cheapestPrice
+    ? '<span class="tag">🏆 Cheapest Price</span>'
+    : ""}
+</h3>
         <p>${escapeHtml(s.address)} · Regular · Credit</p>
         <span class="tag">${escapeHtml(s.reportedAt)}</span>
         ${s.isStale
