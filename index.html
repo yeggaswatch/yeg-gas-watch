@@ -366,7 +366,7 @@ function displayStations() {
     container.innerHTML = "<p>No matching stations found.</p>";
     return;
   }
-
+const cheapestPrice = Math.min(...filtered.map(s => s.price));
   container.innerHTML = filtered.map(s => `
     <div class="station">
       <div>
