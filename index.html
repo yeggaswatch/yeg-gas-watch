@@ -443,10 +443,12 @@ async function loadStations() {
           ? new Date(regularCreditPrice.postedAt)
           : null;
 
-        return {
-          name: station.name || "Unnamed station",
-          address: fullAddress || "Edmonton, Alberta",
-          price: Number(regularCreditPrice.centsPerLitre),
+       return {
+  name: station.name || "Unnamed station",
+  address: fullAddress || "Edmonton, Alberta",
+  latitude: Number(station.location?.latitude),
+  longitude: Number(station.location?.longitude),
+  price: Number(regularCreditPrice.centsPerLitre),
           reportedAt: formatTimeAgo(postedDate),
           isStale: Boolean(
   postedDate &&
