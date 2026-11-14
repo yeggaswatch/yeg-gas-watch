@@ -366,14 +366,31 @@ function displayStations() {
   const selectedFuel = fuel.value;
   const sortOption = document.getElementById("sort").value;
   const selectedArea = document.getElementById("area").value;
+  function getStationArea(station) {
+  const lat = station.latitude;
+  const lng = station.longitude;
+
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return "Unknown";
+  }
+
+  if (lat >= 53.55 && lng < -113.50) return "West";
+  if (lat >= 53.55 && lng >= -113.50) return "North";
+  if (lat < 53.48) return "South";
+  if (lng >= -113.45) return "East";
+
+  return "Central";
+}
 
   const filtered = stations
     .filter(s =>
-      (s.name + " " + s.address).toLowerCase().includes(query) &&
-      (selectedFuel === "All" ||
-       selectedFuel === "All fuel types" ||
-       selectedFuel === "Regular")
-    )
+  (s.name + " " + s.address).toLowerCase().includes(query) &&
+  (selectedFuel === "All" ||
+   selectedFuel === "All fuel types" ||
+   selectedFuel === "Regular") &&
+  (selectedArea === "All" ||
+   getStationArea(s) === selectedArea)
+)
     .sort((a, b) => {
       if (sortOption === "high") {
         return b.price - a.price;
@@ -483,6 +500,7 @@ async function loadStations() {
 search.addEventListener("input", displayStations);
 fuel.addEventListener("change", displayStations);
   document.getElementById("sort").addEventListener("change", displayStations);
+  document.getElementById("area").addEventListener("change", displayStations);
 
   const refreshButton = document.getElementById("refreshButton");
 
