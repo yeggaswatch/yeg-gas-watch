@@ -483,19 +483,19 @@ document.getElementById("calculateSavings").addEventListener("click", () => {
 
   const netSavings = grossSavings - detourCost;
 
-  if (netSavings > 0) {
-    result.textContent =
-      "Estimated net savings: $" + netSavings.toFixed(2) +
-      " | Gross savings: $" + grossSavings.toFixed(2) +
-      " | Detour fuel cost: $" + detourCost.toFixed(2) +
-      ". The detour is worthwhile based on fuel cost.";
-  } else {
-    result.textContent =
-      "Estimated net savings: $" + netSavings.toFixed(2) +
-      " | Gross savings: $" + grossSavings.toFixed(2) +
-      " | Detour fuel cost: $" + detourCost.toFixed(2) +
-      ". The detour is not worthwhile based on fuel cost.";
-  }
+ result.innerHTML = `
+  <h3>Your Fuel Savings Estimate</h3>
+  <p>Gross fuel savings: $${grossSavings.toFixed(2)}</p>
+  <p>Extra driving cost: -$${detourCost.toFixed(2)}</p>
+  <hr>
+  <h2>Actual Net Savings: $${netSavings.toFixed(2)}</h2>
+  <p>${netSavings > 0
+    ? "Worth the detour!"
+    : netSavings < 0
+      ? "Not worth the detour."
+      : "You break even."}
+  </p>
+`;
 });
 
   loadStations();
