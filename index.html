@@ -337,9 +337,11 @@ function formatTimeAgo(date) {
   return "Reported " + date.toLocaleDateString("en-CA");
 }
 
+
 function displayStations() {
   const query = search.value.toLowerCase().trim();
   const selectedFuel = fuel.value;
+  const sortOption = document.getElementById("sort").value;
 
   const filtered = stations
     .filter(s =>
@@ -348,7 +350,17 @@ function displayStations() {
        selectedFuel === "All fuel types" ||
        selectedFuel === "Regular")
     )
-    .sort((a, b) => a.price - b.price);
+    .sort((a, b) => {
+      if (sortOption === "high") {
+        return b.price - a.price;
+      }
+
+      if (sortOption === "name") {
+        return a.name.localeCompare(b.name);
+      }
+
+      return a.price - b.price;
+    });
 
   if (filtered.length === 0) {
     container.innerHTML = "<p>No matching stations found.</p>";
@@ -360,13 +372,10 @@ function displayStations() {
       <div>
         <h3>${escapeHtml(s.name)}</h3>
         <p>${escapeHtml(s.address)} · Regular · Credit</p>
-        <span class="tag">
-  ${escapeHtml(s.reportedAt)}
-</span>
-${s.isStale
-  ? '<span class="tag">⚠️ Older than 24 hours</span>'
-  : ""}
-
+        <span class="tag">${escapeHtml(s.reportedAt)}</span>
+        ${s.isStale
+          ? '<span class="tag">⚠️ Older than 24 hours</span>'
+          : ""}
         ${s.membershipRequired
           ? '<span class="tag">Membership required</span>'
           : ""}
@@ -376,6 +385,7 @@ ${s.isStale
     </div>
   `).join("");
 }
+
 
 async function loadStations() {
   container.innerHTML = "<p>Loading Edmonton gas prices...</p>";
@@ -441,6 +451,7 @@ async function loadStations() {
 
 search.addEventListener("input", displayStations);
 fuel.addEventListener("change", displayStations);
+  document.getElementById("sort").addEventListener("change", displayStations);
 
   const refreshButton = document.getElementById("refreshButton");
 
