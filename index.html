@@ -365,6 +365,7 @@ function displayStations() {
   const query = search.value.toLowerCase().trim();
   const selectedFuel = fuel.value;
   const sortOption = document.getElementById("sort").value;
+  const selectedArea = document.getElementById("area").value;
 
   const filtered = stations
     .filter(s =>
