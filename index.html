@@ -403,7 +403,12 @@ function displayStations() {
 
       return a.price - b.price;
     });
+const areaCount = document.getElementById("areaCount");
 
+areaCount.textContent =
+  selectedArea === "All"
+    ? `Showing ${filtered.length} stations across Edmonton`
+    : `Showing ${filtered.length} stations in ${selectedArea} Edmonton`;
   if (filtered.length === 0) {
     container.innerHTML = "<p>No matching stations found.</p>";
     return;
